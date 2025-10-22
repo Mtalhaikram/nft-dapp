@@ -1,4 +1,5 @@
 import { WalletButton } from "@/components/WalletButton";
+import { MintNFT } from "@/components/MintNFT";
 
 export default function Home() {
   return (
@@ -18,6 +19,11 @@ export default function Home() {
           {/* Wallet Connection Section */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12">
             <WalletButton />
+          </div>
+
+          {/* NFT Minting Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12">
+            <MintNFT />
           </div>
 
           {/* Features Section */}
