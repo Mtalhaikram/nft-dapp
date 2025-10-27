@@ -5,7 +5,7 @@ export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "0x5
 // Network configuration
 export const SUPPORTED_NETWORKS = {
   localhost: {
-    chainId: 31337,
+    chainId: 1337,
     name: "Localhost",
     explorer: "http://localhost:8545"
   },

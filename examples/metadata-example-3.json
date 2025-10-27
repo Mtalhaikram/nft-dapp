@@ -1,0 +1,42 @@
+{
+  "name": "Gaming Character - Warrior",
+  "description": "A legendary warrior character from the fantasy realm. Equipped with ancient weapons and magical armor, ready for epic battles.",
+  "image": "https://ipfs.io/ipfs/QmGamingCharacterHash",
+  "attributes": [
+    {
+      "trait_type": "Class",
+      "value": "Warrior"
+    },
+    {
+      "trait_type": "Level",
+      "value": 50
+    },
+    {
+      "trait_type": "Weapon",
+      "value": "Legendary Sword"
+    },
+    {
+      "trait_type": "Armor",
+      "value": "Dragon Scale"
+    },
+    {
+      "trait_type": "Element",
+      "value": "Fire"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Epic"
+    },
+    {
+      "trait_type": "Health Points",
+      "value": 1000
+    },
+    {
+      "trait_type": "Mana Points",
+      "value": 500
+    }
+  ],
+  "external_url": "https://fantasygame.com",
+  "background_color": "2d1b69",
+  "animation_url": "https://ipfs.io/ipfs/QmCharacterAnimationHash"
+}

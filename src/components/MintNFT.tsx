@@ -4,17 +4,18 @@ import React, { useState } from 'react'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract, useChainId } from 'wagmi'
 import { parseEther, formatEther } from 'viem'
 import { CONTRACT_ADDRESS, CONTRACT_ABI, SUPPORTED_NETWORKS } from '@/lib/contract'
+import { IPFSUploader } from './IPFSUploader'
 
 type TransactionStatus = 'idle' | 'pending' | 'success' | 'error'
 
 export function MintNFT() {
-  const { address, isConnected } = useAccount()
+  const { isConnected } = useAccount()
   const chainId = useChainId()
   const [customURI, setCustomURI] = useState('')
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>('idle')
-  const [txHash, setTxHash] = useState<string>('')
   const [mintedTokenId, setMintedTokenId] = useState<number | null>(null)
   const [errorMessage, setErrorMessage] = useState<string>('')
+  const [showIPFSUploader, setShowIPFSUploader] = useState(false)
 
   // Read contract data
   const { data: contractInfo } = useReadContract({
@@ -30,7 +31,7 @@ export function MintNFT() {
   })
 
   // Write contract for minting
-  const { writeContract, isPending, error } = useWriteContract()
+  const { writeContract, isPending, error, data: txHash } = useWriteContract()
 
   // Wait for transaction receipt
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
@@ -46,7 +47,7 @@ export function MintNFT() {
 
     // Check if we're on a supported network
     const supportedChainIds = Object.values(SUPPORTED_NETWORKS).map(network => network.chainId)
-    if (!supportedChainIds.includes(chainId as any)) {
+    if (!supportedChainIds.includes(chainId)) {
       setErrorMessage(`Please switch to a supported network. Current: ${chainId}`)
       setTransactionStatus('error')
       return
@@ -56,20 +57,17 @@ export function MintNFT() {
       setTransactionStatus('pending')
       setErrorMessage('')
       
-      const hash = await writeContract({
+      await writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: CONTRACT_ABI,
         functionName: 'mint',
         value: mintPrice ? BigInt(mintPrice.toString()) : parseEther('0.01'),
       })
 
-      if (hash) {
-        setTxHash(hash)
-        setTransactionStatus('pending')
-      }
-    } catch (err: any) {
+      setTransactionStatus('pending')
+    } catch (err: unknown) {
       console.error('Minting error:', err)
-      setErrorMessage(err?.message || 'Failed to mint NFT. Please try again.')
+      setErrorMessage(err instanceof Error ? err.message : 'Failed to mint NFT. Please try again.')
       setTransactionStatus('error')
     }
   }
@@ -89,7 +87,7 @@ export function MintNFT() {
 
     // Check if we're on a supported network
     const supportedChainIds = Object.values(SUPPORTED_NETWORKS).map(network => network.chainId)
-    if (!supportedChainIds.includes(chainId as any)) {
+    if (!supportedChainIds.includes(chainId)) {
       setErrorMessage(`Please switch to a supported network. Current: ${chainId}`)
       setTransactionStatus('error')
       return
@@ -99,7 +97,7 @@ export function MintNFT() {
       setTransactionStatus('pending')
       setErrorMessage('')
       
-      const hash = await writeContract({
+      await writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: CONTRACT_ABI,
         functionName: 'mintWithURI',
@@ -107,15 +105,17 @@ export function MintNFT() {
         value: mintPrice ? BigInt(mintPrice.toString()) : parseEther('0.01'),
       })
 
-      if (hash) {
-        setTxHash(hash)
-        setTransactionStatus('pending')
-      }
-    } catch (err: any) {
+      setTransactionStatus('pending')
+    } catch (err: unknown) {
       console.error('Minting error:', err)
-      setErrorMessage(err?.message || 'Failed to mint NFT with custom URI. Please try again.')
+      setErrorMessage(err instanceof Error ? err.message : 'Failed to mint NFT with custom URI. Please try again.')
       setTransactionStatus('error')
     }
+  }
+
+  const handleIPFSUploadComplete = (metadataUrl: string) => {
+    setCustomURI(metadataUrl)
+    setShowIPFSUploader(false)
   }
 
   // Handle transaction confirmation
@@ -156,6 +156,11 @@ export function MintNFT() {
 
   return (
     <div className="space-y-6">
+      {/* IPFS Uploader */}
+      {showIPFSUploader && (
+        <IPFSUploader onMetadataUploaded={handleIPFSUploadComplete} />
+      )}
+
       {/* Network Warning */}
       {isUnsupportedNetwork && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -254,16 +259,25 @@ export function MintNFT() {
             Custom URI Mint
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Mint an NFT with a custom metadata URI.
+            Mint an NFT with a custom metadata URI or upload to IPFS.
           </p>
           <div className="space-y-4">
-            <input
-              type="text"
-              value={customURI}
-              onChange={(e) => setCustomURI(e.target.value)}
-              placeholder="https://example.com/metadata.json"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={customURI}
+                onChange={(e) => setCustomURI(e.target.value)}
+                placeholder="https://example.com/metadata.json or IPFS hash"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              />
+              <button
+                onClick={() => setShowIPFSUploader(!showIPFSUploader)}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <span>📤</span>
+                {showIPFSUploader ? 'Hide' : 'Upload to IPFS'}
+              </button>
+            </div>
             <button
               onClick={handleMintWithURI}
               disabled={isPending || isConfirming || !customURI.trim() || isUnsupportedNetwork}

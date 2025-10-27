@@ -1,0 +1,33 @@
+{
+  "name": "Digital Art Masterpiece",
+  "description": "An abstract digital artwork created using AI and traditional art techniques. This piece explores the intersection of technology and creativity.",
+  "image": "https://ipfs.io/ipfs/QmAnotherImageHash",
+  "attributes": [
+    {
+      "trait_type": "Art Style",
+      "value": "Abstract"
+    },
+    {
+      "trait_type": "Color Palette",
+      "value": "Neon"
+    },
+    {
+      "trait_type": "Medium",
+      "value": "Digital"
+    },
+    {
+      "trait_type": "Year Created",
+      "value": "2024"
+    },
+    {
+      "trait_type": "Artist",
+      "value": "AI-Human Collaboration"
+    },
+    {
+      "trait_type": "Edition",
+      "value": "1/1"
+    }
+  ],
+  "external_url": "https://digitalartgallery.com",
+  "background_color": "0d1117"
+}

@@ -1,7 +1,6 @@
 'use client'
 
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
-import { injected, metaMask } from 'wagmi/connectors'
 
 export function WalletButton() {
   const { address, isConnected } = useAccount()
@@ -69,7 +68,7 @@ export function WalletButton() {
       </div>
       
       <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-        <p>Don't have MetaMask? <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Download it here</a></p>
+        <p>Don&apos;t have MetaMask? <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Download it here</a></p>
       </div>
     </div>
   )
