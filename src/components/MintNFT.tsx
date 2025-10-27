@@ -1,18 +1,20 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi'
-import { parseEther } from 'viem'
-import { CONTRACT_ADDRESS, CONTRACT_ABI } from '@/lib/contract'
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract, useChainId } from 'wagmi'
+import { parseEther, formatEther } from 'viem'
+import { CONTRACT_ADDRESS, CONTRACT_ABI, SUPPORTED_NETWORKS } from '@/lib/contract'
 
 type TransactionStatus = 'idle' | 'pending' | 'success' | 'error'
 
 export function MintNFT() {
   const { address, isConnected } = useAccount()
+  const chainId = useChainId()
   const [customURI, setCustomURI] = useState('')
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>('idle')
   const [txHash, setTxHash] = useState<string>('')
   const [mintedTokenId, setMintedTokenId] = useState<number | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   // Read contract data
   const { data: contractInfo } = useReadContract({
@@ -37,12 +39,22 @@ export function MintNFT() {
 
   const handleMint = async () => {
     if (!isConnected) {
-      alert('Please connect your wallet first')
+      setErrorMessage('Please connect your wallet first')
+      setTransactionStatus('error')
+      return
+    }
+
+    // Check if we're on a supported network
+    const supportedChainIds = Object.values(SUPPORTED_NETWORKS).map(network => network.chainId)
+    if (!supportedChainIds.includes(chainId as any)) {
+      setErrorMessage(`Please switch to a supported network. Current: ${chainId}`)
+      setTransactionStatus('error')
       return
     }
 
     try {
       setTransactionStatus('pending')
+      setErrorMessage('')
       
       const hash = await writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
@@ -55,25 +67,37 @@ export function MintNFT() {
         setTxHash(hash)
         setTransactionStatus('pending')
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Minting error:', err)
+      setErrorMessage(err?.message || 'Failed to mint NFT. Please try again.')
       setTransactionStatus('error')
     }
   }
 
   const handleMintWithURI = async () => {
     if (!isConnected) {
-      alert('Please connect your wallet first')
+      setErrorMessage('Please connect your wallet first')
+      setTransactionStatus('error')
       return
     }
 
     if (!customURI.trim()) {
-      alert('Please enter a custom URI')
+      setErrorMessage('Please enter a custom URI')
+      setTransactionStatus('error')
+      return
+    }
+
+    // Check if we're on a supported network
+    const supportedChainIds = Object.values(SUPPORTED_NETWORKS).map(network => network.chainId)
+    if (!supportedChainIds.includes(chainId as any)) {
+      setErrorMessage(`Please switch to a supported network. Current: ${chainId}`)
+      setTransactionStatus('error')
       return
     }
 
     try {
       setTransactionStatus('pending')
+      setErrorMessage('')
       
       const hash = await writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
@@ -87,8 +111,9 @@ export function MintNFT() {
         setTxHash(hash)
         setTransactionStatus('pending')
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Minting error:', err)
+      setErrorMessage(err?.message || 'Failed to mint NFT with custom URI. Please try again.')
       setTransactionStatus('error')
     }
   }
@@ -97,10 +122,16 @@ export function MintNFT() {
   React.useEffect(() => {
     if (isConfirmed && txHash) {
       setTransactionStatus('success')
-      // Extract token ID from transaction logs (simplified)
+      // Try to extract token ID from the transaction logs
+      // For now, we'll use a placeholder - in a real implementation,
+      // you would parse the transaction receipt logs to get the actual token ID
       setMintedTokenId(Math.floor(Math.random() * 1000) + 1) // Mock token ID
     }
   }, [isConfirmed, txHash])
+
+  // Get current network info
+  const currentNetwork = Object.values(SUPPORTED_NETWORKS).find(network => network.chainId === chainId)
+  const explorerUrl = currentNetwork?.explorer
 
   if (!isConnected) {
     return (
@@ -120,14 +151,37 @@ export function MintNFT() {
     )
   }
 
+  // Show network warning if not on supported network
+  const isUnsupportedNetwork = !Object.values(SUPPORTED_NETWORKS).some(network => network.chainId === chainId)
+
   return (
     <div className="space-y-6">
+      {/* Network Warning */}
+      {isUnsupportedNetwork && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <div className="text-2xl">🚨</div>
+            <div>
+              <h3 className="font-semibold text-red-800 dark:text-red-200">
+                Unsupported Network
+              </h3>
+              <p className="text-red-700 dark:text-red-300 text-sm">
+                Please switch to Sepolia testnet (Chain ID: 11155111) to mint NFTs
+              </p>
+              <p className="text-red-600 dark:text-red-400 text-xs mt-1">
+                Current network: Chain ID {chainId}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Contract Info */}
       {contractInfo && (
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
           <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">
-          Contract Information
-        </h3>
+            Contract Information
+          </h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-blue-600 dark:text-blue-400">Name:</span>
@@ -148,7 +202,13 @@ export function MintNFT() {
             <div>
               <span className="text-blue-600 dark:text-blue-400">Mint Price:</span>
               <span className="ml-2 text-blue-800 dark:text-blue-200">
-                {mintPrice ? `${(Number(mintPrice) / 1e18).toFixed(4)} ETH` : 'Loading...'}
+                {mintPrice ? `${formatEther(mintPrice)} ETH` : 'Loading...'}
+              </span>
+            </div>
+            <div>
+              <span className="text-blue-600 dark:text-blue-400">Network:</span>
+              <span className="ml-2 text-blue-800 dark:text-blue-200">
+                {currentNetwork?.name || `Chain ID ${chainId}`}
               </span>
             </div>
           </div>
@@ -171,7 +231,7 @@ export function MintNFT() {
           </p>
           <button
             onClick={handleMint}
-            disabled={isPending || isConfirming}
+            disabled={isPending || isConfirming || isUnsupportedNetwork}
             className="bg-purple-500 hover:bg-purple-600 disabled:bg-gray-400 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center gap-2"
           >
             {(isPending || isConfirming) ? (
@@ -206,7 +266,7 @@ export function MintNFT() {
             />
             <button
               onClick={handleMintWithURI}
-              disabled={isPending || isConfirming || !customURI.trim()}
+              disabled={isPending || isConfirming || !customURI.trim() || isUnsupportedNetwork}
               className="bg-indigo-500 hover:bg-indigo-600 disabled:bg-gray-400 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center gap-2"
             >
               {(isPending || isConfirming) ? (
@@ -278,7 +338,7 @@ export function MintNFT() {
                     Transaction Failed
                   </p>
                   <p className="text-sm text-red-700 dark:text-red-300">
-                    {error?.message || 'An error occurred during minting'}
+                    {errorMessage || error?.message || 'An error occurred during minting'}
                   </p>
                 </div>
               </div>
@@ -293,14 +353,16 @@ export function MintNFT() {
               <p className="font-mono text-xs text-gray-800 dark:text-gray-200 break-all">
                 {txHash}
               </p>
-              <a
-                href={`https://sepolia.etherscan.io/tx/${txHash}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 text-sm mt-1 inline-block"
-              >
-                View on Etherscan →
-              </a>
+              {explorerUrl && (
+                <a
+                  href={`${explorerUrl}/tx/${txHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-600 text-sm mt-1 inline-block"
+                >
+                  View on Explorer →
+                </a>
+              )}
             </div>
           )}
         </div>

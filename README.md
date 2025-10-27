@@ -1,15 +1,16 @@
-# NFT dApp - MetaMask Integration
+# NFT dApp - Connect Your Wallet & Mint NFTs
 
-A modern Next.js dApp for minting NFTs with MetaMask wallet integration.
+A modern Next.js dApp that allows users to connect their MetaMask wallet and mint NFTs directly from the website. Built with wagmi, viem, and Tailwind CSS.
 
-## Features
+## 🚀 Features
 
-- 🔗 **MetaMask Wallet Connection** - Connect your wallet with one click
-- 🎨 **NFT Minting** - Mint NFTs using smart contract
-- 📊 **Transaction Status** - Real-time transaction tracking
-- 🎯 **Custom URIs** - Mint NFTs with custom metadata
-- 📱 **Responsive Design** - Works on all devices
-- 🌙 **Dark Mode** - Beautiful dark/light theme support
+- **Wallet Integration**: Connect MetaMask and other wallets seamlessly
+- **NFT Minting**: Mint NFTs with custom metadata URIs
+- **Network Support**: Works with Sepolia testnet, localhost, and mainnet
+- **Real-time Updates**: Live contract data and transaction status
+- **Responsive Design**: Beautiful UI that works on all devices
+- **Error Handling**: Comprehensive error messages and user feedback
+- **Dark Mode**: Beautiful dark/light theme support
 
 ## Smart Contract
 
@@ -20,36 +21,65 @@ The project includes a complete ERC-721 NFT contract (`contracts/MyNFT.sol`) wit
 - Supply management and pricing
 - Owner controls and withdrawal
 
-## Getting Started
+## 📋 Prerequisites
 
-### 1. Install Dependencies
+Before you begin, ensure you have:
 
-```bash
-npm install
-```
+- Node.js 18+ installed
+- MetaMask browser extension
+- Some ETH on Sepolia testnet for gas fees
+- A deployed MyNFT smart contract
 
-### 2. Set Up Environment Variables
+## 🛠️ Installation
 
-Create a `.env.local` file:
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd nft-dapp
+   ```
 
-```env
-NEXT_PUBLIC_CONTRACT_ADDRESS=your_contract_address_here
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
-```
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-### 3. Deploy Smart Contract
+3. **Set up environment variables**
+   Create a `.env.local` file in the root directory:
+   ```env
+   # Contract Configuration
+   NEXT_PUBLIC_CONTRACT_ADDRESS=0xYourDeployedContractAddress
+   
+   # WalletConnect Configuration (optional)
+   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
+   
+   # Network Configuration
+   NEXT_PUBLIC_NETWORK=sepolia
+   ```
 
-1. Install Hardhat or Foundry
-2. Deploy the `MyNFT.sol` contract
-3. Update the contract address in `.env.local`
+4. **Update contract address**
+   Replace `0xYourDeployedContractAddress` with your actual deployed contract address in:
+   - `.env.local` file
+   - `src/lib/contract.ts` (fallback value)
 
-### 4. Run Development Server
+## 🚀 Getting Started
 
-```bash
-npm run dev
-```
+1. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+2. **Open your browser**
+   Navigate to `http://localhost:3000`
+
+3. **Connect your wallet**
+   - Click "Connect MetaMask" button
+   - Approve the connection in MetaMask
+   - Make sure you're on Sepolia testnet
+
+4. **Start minting NFTs**
+   - View contract information
+   - Choose between standard mint or custom URI mint
+   - Confirm transactions in MetaMask
 
 ## Usage
 
@@ -127,13 +157,72 @@ npm start
 2. Deploy to Vercel, Netlify, or your preferred platform
 3. Set environment variables in your deployment platform
 
-## Security Notes
+## 🐛 Troubleshooting
 
-- Always verify smart contracts before deployment
-- Use test networks for development
+### Common Issues
+
+1. **"Wallet Not Connected"**
+   - Make sure MetaMask is installed and unlocked
+   - Try refreshing the page and reconnecting
+
+2. **"Unsupported Network"**
+   - Switch to Sepolia testnet in MetaMask
+   - Add Sepolia network if not already added
+
+3. **"Transaction Failed"**
+   - Check if you have enough ETH for gas fees
+   - Ensure contract address is correct
+   - Verify you're on the right network
+
+4. **Contract not found**
+   - Double-check the contract address
+   - Ensure the contract is deployed on the current network
+   - Verify the ABI matches your deployed contract
+
+### Getting Sepolia ETH
+1. Visit [Sepolia Faucet](https://sepoliafaucet.com/)
+2. Enter your wallet address
+3. Request test ETH
+4. Wait for confirmation
+
+## 🚀 Deployment
+
+### Vercel Deployment
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add environment variables in Vercel dashboard
+4. Deploy!
+
+### Environment Variables for Production
+```env
+NEXT_PUBLIC_CONTRACT_ADDRESS=0xYourProductionContractAddress
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
+NEXT_PUBLIC_NETWORK=mainnet
+```
+
+## 🔒 Security Notes
+
 - Never commit private keys or sensitive data
-- Test thoroughly before mainnet deployment
+- Use environment variables for configuration
+- Test thoroughly on testnets before mainnet deployment
+- Verify contract addresses before going live
+- Always verify smart contracts before deployment
 
-## License
+## 📚 Learn More
 
-MIT License - feel free to use this project for your own NFT dApps!
+- [wagmi Documentation](https://wagmi.sh/)
+- [viem Documentation](https://viem.sh/)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [MetaMask Developer Docs](https://docs.metamask.io/)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.

@@ -1,5 +1,25 @@
 // Contract configuration and ABI
+// Update this with your deployed contract address
 export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "0x5FbDB2315678afecb367f032d93F642f64180aa3" // Default localhost address
+
+// Network configuration
+export const SUPPORTED_NETWORKS = {
+  localhost: {
+    chainId: 31337,
+    name: "Localhost",
+    explorer: "http://localhost:8545"
+  },
+  sepolia: {
+    chainId: 11155111,
+    name: "Sepolia",
+    explorer: "https://sepolia.etherscan.io"
+  },
+  mainnet: {
+    chainId: 1,
+    name: "Ethereum Mainnet",
+    explorer: "https://etherscan.io"
+  }
+} as const
 
 export const CONTRACT_ABI = [
   {
