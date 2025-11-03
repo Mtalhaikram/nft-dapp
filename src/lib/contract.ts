@@ -1,6 +1,6 @@
 // Contract configuration and ABI
-// Update this with your deployed contract address
-export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "0x5FbDB2315678afecb367f032d93F642f64180aa3" // Default localhost address
+// Deployed on Sepolia testnet
+export const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "0x3824B33323C3663FF878E7A828A3c8d7f7f65210" // Sepolia deployment
 
 // Network configuration
 export const SUPPORTED_NETWORKS = {

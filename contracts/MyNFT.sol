@@ -1,14 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract MyNFT is ERC721, Ownable {
-    using Counters for Counters.Counter;
-    
-    Counters.Counter private _tokenIdCounter;
+    uint256 private _tokenIdCounter;
     
     // Base URI for metadata
     string private _baseTokenURI;
@@ -31,8 +28,8 @@ contract MyNFT is ERC721, Ownable {
         require(totalSupply() < MAX_SUPPLY, "Max supply reached");
         require(msg.value >= mintPrice, "Insufficient payment");
         
-        _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter++;
+        uint256 tokenId = _tokenIdCounter;
         
         _safeMint(msg.sender, tokenId);
         
@@ -46,8 +43,8 @@ contract MyNFT is ERC721, Ownable {
         require(totalSupply() < MAX_SUPPLY, "Max supply reached");
         require(msg.value >= mintPrice, "Insufficient payment");
         
-        _tokenIdCounter.increment();
-        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter++;
+        uint256 tokenId = _tokenIdCounter;
         
         _safeMint(msg.sender, tokenId);
         
@@ -58,12 +55,12 @@ contract MyNFT is ERC721, Ownable {
     
     // Get total supply
     function totalSupply() public view returns (uint256) {
-        return _tokenIdCounter.current();
+        return _tokenIdCounter;
     }
     
     // Get current token ID
     function getCurrentTokenId() public view returns (uint256) {
-        return _tokenIdCounter.current();
+        return _tokenIdCounter;
     }
     
     // Set base URI (only owner)
@@ -93,8 +90,8 @@ contract MyNFT is ERC721, Ownable {
     
     // Get contract info
     function getContractInfo() public view returns (
-        string memory name,
-        string memory symbol,
+        string memory nftName,
+        string memory nftSymbol,
         uint256 totalSupply_,
         uint256 maxSupply,
         uint256 currentPrice
