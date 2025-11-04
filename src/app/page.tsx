@@ -1,11 +1,12 @@
 import { WalletButton } from "@/components/WalletButton";
 import { MintNFT } from "@/components/MintNFT";
+import MyNFTs from "@/components/MyNFTs";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
@@ -16,14 +17,21 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Wallet Connection Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12">
-            <WalletButton />
+          <div className="max-w-4xl mx-auto mb-12">
+            {/* Wallet Connection Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12">
+              <WalletButton />
+            </div>
+
+            {/* NFT Minting Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12">
+              <MintNFT />
+            </div>
           </div>
 
-          {/* NFT Minting Section */}
+          {/* My NFTs Section */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12">
-            <MintNFT />
+            <MyNFTs />
           </div>
 
           {/* Features Section */}
