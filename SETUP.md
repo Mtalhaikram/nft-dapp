@@ -53,7 +53,7 @@ Complete guide for setting up and deploying the NFT Marketplace dApp.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/nft-dapp.git
+git clone https://github.com/Mtalhaikram/nft-dapp.git
 cd nft-dapp
 
 # Install dependencies

@@ -29,7 +29,7 @@ Feature requests are welcome! Please create an issue with:
 
 1. **Fork the repository**
 ```bash
-git clone https://github.com/yourusername/nft-dapp.git
+git clone https://github.com/Mtalhaikram/nft-dapp.git
 cd nft-dapp
 ```
 
@@ -222,7 +222,7 @@ export async function uploadNFTToIPFS(
 If you discover a security vulnerability:
 
 1. **DO NOT** create a public issue
-2. Email security concerns to: security@yourproject.com
+2. Email security concerns to: talhaikramweb3@gmail.com
 3. Provide detailed information about the vulnerability
 4. Wait for a response before disclosing publicly
 

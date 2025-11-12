@@ -55,7 +55,7 @@ A modern, full-stack decentralized application for minting, managing, and tradin
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/nft-dapp.git
+git clone https://github.com/Mtalhaikram/nft-dapp.git
 cd nft-dapp
 ```
 
@@ -314,9 +314,8 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ## 📞 Support
 
-- 📧 Email: your.email@example.com
-- 🐦 Twitter: [@yourhandle](https://twitter.com/yourhandle)
-- 💬 Discord: [Your Discord Server](https://discord.gg/yourserver)
+- 📧 Email: talhaikramweb3@gmail.com
+- 💬 GitHub Issues: [Report bugs or request features](https://github.com/Mtalhaikram/nft-dapp/issues)
 
 ## 🔗 Links
 
@@ -326,4 +325,4 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ---
 
-**Built with ❤️ by [Your Name](https://github.com/yourusername)**
+**Built with ❤️ by [Talha Ikram](https://github.com/Mtalhaikram)**

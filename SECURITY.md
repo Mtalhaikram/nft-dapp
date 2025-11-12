@@ -15,7 +15,7 @@ We release patches for security vulnerabilities. Which versions are eligible for
 
 If you discover a security vulnerability, please send an email to:
 
-**security@yourproject.com** (replace with your actual email)
+**talhaikramweb3@gmail.com**
 
 Please include the following information:
 
@@ -155,8 +155,8 @@ We thank the following security researchers for responsibly disclosing vulnerabi
 ## 📞 Contact
 
 For security-related questions that are not vulnerabilities:
-- Email: security@yourproject.com
-- Twitter: @yourhandle (for general inquiries only)
+- Email: talhaikramweb3@gmail.com
+- GitHub: [@Mtalhaikram](https://github.com/Mtalhaikram)
 
 ---
 
