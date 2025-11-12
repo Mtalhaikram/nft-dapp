@@ -20,6 +20,31 @@ interface NFT {
   metadata?: NFTMetadata
 }
 
+// Utility function to convert IPFS URLs to HTTP gateway URLs
+function convertIpfsToHttp(ipfsUrl: string): string {
+  if (!ipfsUrl) return ''
+  
+  // Already an HTTP URL
+  if (ipfsUrl.startsWith('http://') || ipfsUrl.startsWith('https://')) {
+    return ipfsUrl
+  }
+  
+  // Handle ipfs:// protocol
+  if (ipfsUrl.startsWith('ipfs://')) {
+    const hash = ipfsUrl.replace('ipfs://', '')
+    return `https://cloudflare-ipfs.com/ipfs/${hash}`
+  }
+  
+  // Handle ipfs/ prefix
+  if (ipfsUrl.startsWith('ipfs/')) {
+    const hash = ipfsUrl.slice(5)
+    return `https://cloudflare-ipfs.com/ipfs/${hash}`
+  }
+  
+  // Assume it's just a hash
+  return `https://cloudflare-ipfs.com/ipfs/${ipfsUrl}`
+}
+
 export default function MyNFTs() {
   const { address, isConnected } = useAccount()
   const [nfts, setNfts] = useState<NFT[]>([])
@@ -68,16 +93,24 @@ export default function MyNFTs() {
               // Fetch metadata
               let metadata: NFTMetadata | undefined
               try {
-                const metadataUrl = uri.replace('ipfs://', 'https://ipfs.io/ipfs/')
+                const metadataUrl = convertIpfsToHttp(uri)
+                console.log(`Fetching metadata for token ${i} from:`, metadataUrl)
+                
                 const response = await fetch(metadataUrl)
                 if (response.ok) {
                   metadata = await response.json()
+                  console.log(`Metadata for token ${i}:`, metadata)
+                  
+                  // Convert image IPFS URI to HTTP gateway URL
                   if (metadata?.image) {
-                    metadata.image = metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
+                    metadata.image = convertIpfsToHttp(metadata.image)
+                    console.log(`Image URL for token ${i}:`, metadata.image)
                   }
+                } else {
+                  console.error(`Failed to fetch metadata for token ${i}: ${response.status} ${response.statusText}`)
                 }
               } catch (err) {
-                console.log(`Could not fetch metadata for token ${i}`)
+                console.error(`Error fetching metadata for token ${i}:`, err)
               }
 
               userNFTs.push({
@@ -187,9 +220,62 @@ function NFTCard({ nft }: { nft: NFT }) {
   const { address } = useAccount()
   const [imageError, setImageError] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
+  const [currentImageUrl, setCurrentImageUrl] = useState(nft.metadata?.image || '')
+  const [gatewayIndex, setGatewayIndex] = useState(0)
   const [showTransferModal, setShowTransferModal] = useState(false)
   const [recipientAddress, setRecipientAddress] = useState('')
   const [transferError, setTransferError] = useState('')
+
+  // Alternative IPFS gateways as fallbacks
+  const IPFS_GATEWAYS = [
+    'https://cloudflare-ipfs.com/ipfs/',
+    'https://ipfs.io/ipfs/',
+    'https://gateway.pinata.cloud/ipfs/',
+    'https://dweb.link/ipfs/',
+  ]
+
+  // Function to get IPFS hash from URL
+  const getIpfsHash = (url: string): string | null => {
+    if (!url) return null
+    
+    // Extract hash from various IPFS URL formats
+    const ipfsMatch = url.match(/(?:ipfs:\/\/|\/ipfs\/)([a-zA-Z0-9]+)/)
+    if (ipfsMatch) return ipfsMatch[1]
+    
+    // If it's already just a hash
+    if (url.match(/^[a-zA-Z0-9]+$/)) return url
+    
+    return null
+  }
+
+  // Try next gateway when image fails to load
+  const tryNextGateway = () => {
+    const hash = getIpfsHash(nft.metadata?.image || '')
+    if (!hash) {
+      setImageError(true)
+      setImageLoading(false)
+      return
+    }
+
+    const nextIndex = gatewayIndex + 1
+    if (nextIndex < IPFS_GATEWAYS.length) {
+      console.log(`Trying alternative gateway ${nextIndex + 1}/${IPFS_GATEWAYS.length} for NFT #${nft.tokenId}`)
+      setGatewayIndex(nextIndex)
+      setCurrentImageUrl(`${IPFS_GATEWAYS[nextIndex]}${hash}`)
+      setImageLoading(true)
+    } else {
+      console.error(`All gateways failed for NFT #${nft.tokenId}`)
+      setImageError(true)
+      setImageLoading(false)
+    }
+  }
+
+  // Initialize image URL
+  useEffect(() => {
+    if (nft.metadata?.image) {
+      setCurrentImageUrl(nft.metadata.image)
+    }
+  }, [nft.metadata?.image])
 
   const { writeContract, data: hash, isPending, error } = useWriteContract()
   
@@ -243,23 +329,32 @@ function NFTCard({ nft }: { nft: NFT }) {
     <div className="group bg-gray-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-700 hover:border-blue-500 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1">
       {/* Image Container */}
       <div className="aspect-square bg-gradient-to-br from-gray-900 to-gray-800 relative overflow-hidden">
-        {nft.metadata?.image && !imageError ? (
+        {currentImageUrl && !imageError ? (
           <>
             {imageLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                {gatewayIndex > 0 && (
+                  <p className="absolute bottom-4 text-xs text-white/60">
+                    Trying gateway {gatewayIndex + 1}/{IPFS_GATEWAYS.length}...
+                  </p>
+                )}
               </div>
             )}
             <img
-              src={nft.metadata.image}
-              alt={nft.metadata.name || `NFT #${nft.tokenId}`}
+              key={currentImageUrl} // Force re-render when URL changes
+              src={currentImageUrl}
+              alt={nft.metadata?.name || `NFT #${nft.tokenId}`}
               className={`w-full h-full object-cover transition-opacity duration-300 ${
                 imageLoading ? 'opacity-0' : 'opacity-100'
               }`}
-              onLoad={() => setImageLoading(false)}
-              onError={() => {
-                setImageError(true)
+              onLoad={() => {
+                console.log(`✅ Image loaded successfully for NFT #${nft.tokenId} using gateway ${gatewayIndex + 1}`)
                 setImageLoading(false)
+              }}
+              onError={() => {
+                console.error(`❌ Failed to load image for NFT #${nft.tokenId} from:`, currentImageUrl)
+                tryNextGateway()
               }}
             />
           </>
@@ -404,10 +499,10 @@ function NFTCard({ nft }: { nft: NFT }) {
 
             <div className="mb-6">
               <div className="flex items-center gap-3 p-4 bg-gray-900/50 rounded-lg border border-gray-700">
-                {nft.metadata?.image && !imageError ? (
+                {currentImageUrl && !imageError ? (
                   <img
-                    src={nft.metadata.image}
-                    alt={nft.metadata.name || `NFT #${nft.tokenId}`}
+                    src={currentImageUrl}
+                    alt={nft.metadata?.name || `NFT #${nft.tokenId}`}
                     className="w-16 h-16 rounded-lg object-cover"
                   />
                 ) : (

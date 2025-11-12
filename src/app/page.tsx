@@ -1,6 +1,7 @@
 import { WalletButton } from "@/components/WalletButton";
 import { MintNFT } from "@/components/MintNFT";
 import MyNFTs from "@/components/MyNFTs";
+import { NFTDebugger } from "@/components/NFTDebugger";
 
 export default function Home() {
   return (
@@ -32,6 +33,11 @@ export default function Home() {
           {/* My NFTs Section */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 mb-12">
             <MyNFTs />
+          </div>
+
+          {/* NFT Debugger Section */}
+          <div className="max-w-4xl mx-auto mb-12">
+            <NFTDebugger />
           </div>
 
           {/* Features Section */}
