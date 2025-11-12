@@ -1,228 +1,329 @@
-# NFT dApp - Connect Your Wallet & Mint NFTs
+# 🎨 NFT Marketplace dApp
 
-A modern Next.js dApp that allows users to connect their MetaMask wallet and mint NFTs directly from the website. Built with wagmi, viem, and Tailwind CSS.
+A modern, full-stack decentralized application for minting, managing, and trading NFTs on the Ethereum blockchain. Built with Next.js 15, TypeScript, Tailwind CSS v4, and Wagmi v2.
 
-## 🚀 Features
+![NFT dApp](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)
+![Solidity](https://img.shields.io/badge/Solidity-0.8.20-gray?style=for-the-badge&logo=solidity)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-- **Wallet Integration**: Connect MetaMask and other wallets seamlessly
-- **NFT Minting**: Mint NFTs with custom metadata URIs
-- **Network Support**: Works with Sepolia testnet, localhost, and mainnet
-- **Real-time Updates**: Live contract data and transaction status
-- **Responsive Design**: Beautiful UI that works on all devices
-- **Error Handling**: Comprehensive error messages and user feedback
-- **Dark Mode**: Beautiful dark/light theme support
+## ✨ Features
 
-## Smart Contract
+### 🔐 **Wallet Integration**
+- Seamless MetaMask wallet connection
+- Multiple wallet connector support via Wagmi
+- Real-time wallet status and balance tracking
+- Copy wallet address functionality
 
-The project includes a complete ERC-721 NFT contract (`contracts/MyNFT.sol`) with:
+### 🎨 **NFT Minting**
+- **Standard Minting**: Quick mint with default metadata
+- **Custom URI Minting**: Mint with custom IPFS metadata
+- **IPFS Upload**: Built-in IPFS uploader with Pinata/Infura support
+- Full metadata customization (name, description, attributes, etc.)
+- Real-time transaction status tracking
 
-- `mint()` function for standard minting
-- `mintWithURI()` function for custom metadata
-- Supply management and pricing
-- Owner controls and withdrawal
+### 🖼️ **NFT Gallery**
+- View all your minted NFTs in a beautiful grid layout
+- Display NFT metadata, images, and attributes
+- Multiple IPFS gateway fallback for reliable image loading
+- Transfer NFTs to other addresses
+- Direct links to OpenSea and Etherscan
 
-## 📋 Prerequisites
+### 🔍 **NFT Debugger**
+- Inspect token metadata directly from the blockchain
+- View token URIs and owner information
+- Preview NFT images with fallback handling
+- Helpful for debugging IPFS and metadata issues
 
-Before you begin, ensure you have:
+### 🎨 **Modern UI/UX**
+- Dark theme with gradient accents
+- Glassmorphism effects
+- Smooth animations and transitions
+- Responsive design for all devices
+- Professional loading states and error handling
 
-- Node.js 18+ installed
-- MetaMask browser extension
-- Some ETH on Sepolia testnet for gas fees
-- A deployed MyNFT smart contract
+## 🚀 Quick Start
 
-## 🛠️ Installation
+### Prerequisites
+
+- **Node.js** 18.0 or higher
+- **npm** or **yarn** or **pnpm**
+- **MetaMask** browser extension
+- **Git**
+
+### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd nft-dapp
-   ```
+```bash
+git clone https://github.com/yourusername/nft-dapp.git
+cd nft-dapp
+```
 
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
-   ```env
-   # Contract Configuration
-   NEXT_PUBLIC_CONTRACT_ADDRESS=0xYourDeployedContractAddress
-   
-   # WalletConnect Configuration (optional)
-   NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
-   
-   # Network Configuration
-   NEXT_PUBLIC_NETWORK=sepolia
-   ```
-
-4. **Update contract address**
-   Replace `0xYourDeployedContractAddress` with your actual deployed contract address in:
-   - `.env.local` file
-   - `src/lib/contract.ts` (fallback value)
-
-## 🚀 Getting Started
-
-1. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-2. **Open your browser**
-   Navigate to `http://localhost:3000`
-
-3. **Connect your wallet**
-   - Click "Connect MetaMask" button
-   - Approve the connection in MetaMask
-   - Make sure you're on Sepolia testnet
-
-4. **Start minting NFTs**
-   - View contract information
-   - Choose between standard mint or custom URI mint
-   - Confirm transactions in MetaMask
-
-## Usage
-
-1. **Connect Wallet**: Click "Connect MetaMask" to connect your wallet
-2. **View Contract Info**: See contract details, supply, and pricing
-3. **Mint NFT**: Use the standard mint or custom URI mint
-4. **Track Transactions**: Monitor transaction status and view on Etherscan
-
-## Contract Functions
-
-### `mint()`
-- Mints an NFT with default metadata
-- Requires payment (default: 0.01 ETH)
-- Returns the token ID
-
-### `mintWithURI(string memory customURI)`
-- Mints an NFT with custom metadata URI
-- Requires payment (default: 0.01 ETH)
-- Returns the token ID
-
-### View Functions
-- `getContractInfo()` - Returns contract details
-- `totalSupply()` - Current supply
-- `mintPrice()` - Current mint price
-
-## Technologies Used
-
-- **Next.js 15** - React framework
-- **Wagmi v2** - React hooks for Ethereum
-- **Viem** - TypeScript interface for Ethereum
-- **Tailwind CSS** - Styling
-- **Solidity** - Smart contracts
-- **OpenZeppelin** - Security standards
-
-## Development
-
-### Smart Contract Development
-
 ```bash
-# Install Hardhat
-npm install --save-dev hardhat
-
-# Initialize Hardhat
-npx hardhat init
-
-# Compile contracts
-npx hardhat compile
-
-# Deploy to local network
-npx hardhat run scripts/deploy.js --network localhost
+npm install
+# or
+yarn install
+# or
+pnpm install
 ```
 
-### Frontend Development
-
+3. **Configure environment variables**
 ```bash
-# Start development server
+# Copy the example environment file
+cp env.example .env.local
+
+# Edit .env.local with your values
+nano .env.local
+```
+
+Required environment variables:
+```env
+NEXT_PUBLIC_CONTRACT_ADDRESS=your_deployed_contract_address
+SEPOLIA_RPC_URL=your_rpc_url
+PRIVATE_KEY=your_private_key_for_deployment
+```
+
+Optional (for IPFS uploads):
+```env
+NEXT_PUBLIC_PINATA_API_KEY=your_pinata_api_key
+NEXT_PUBLIC_PINATA_SECRET_KEY=your_pinata_secret_key
+```
+
+4. **Compile smart contracts**
+```bash
+npm run compile
+```
+
+5. **Deploy the contract (Sepolia testnet)**
+```bash
+npm run deploy:sepolia
+```
+
+6. **Start the development server**
+```bash
 npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
 ```
 
-## Deployment
+7. **Open your browser**
+```
+http://localhost:3000
+```
 
-### Smart Contract
-1. Deploy to your preferred network (Sepolia, Mainnet, etc.)
-2. Update `NEXT_PUBLIC_CONTRACT_ADDRESS` in `.env.local`
-3. Verify contract on Etherscan
+## 🏗️ Project Structure
+
+```
+nft-dapp/
+├── contracts/              # Solidity smart contracts
+│   └── MyNFT.sol          # ERC-721 NFT contract
+├── scripts/               # Deployment scripts
+│   ├── deploy.js
+│   └── deploy.ts
+├── src/
+│   ├── app/               # Next.js 15 app directory
+│   │   ├── globals.css    # Global styles
+│   │   ├── layout.tsx     # Root layout
+│   │   └── page.tsx       # Main page
+│   ├── components/        # React components
+│   │   ├── WalletButton.tsx
+│   │   ├── MintNFT.tsx
+│   │   ├── MyNFTs.tsx
+│   │   ├── IPFSUploader.tsx
+│   │   ├── NFTDebugger.tsx
+│   │   └── WalletProvider.tsx
+│   └── lib/               # Utility libraries
+│       ├── contract.ts    # Contract ABI and config
+│       ├── ipfs.ts        # IPFS upload functions
+│       └── wagmi.ts       # Wagmi configuration
+├── hardhat.config.ts      # Hardhat configuration
+├── env.example            # Environment variables template
+└── package.json           # Dependencies
+```
+
+## 🔧 Technology Stack
 
 ### Frontend
-1. Build the project: `npm run build`
-2. Deploy to Vercel, Netlify, or your preferred platform
-3. Set environment variables in your deployment platform
+- **[Next.js 15](https://nextjs.org/)** - React framework with App Router
+- **[React 19](https://react.dev/)** - UI library
+- **[TypeScript](https://www.typescriptlang.org/)** - Type safety
+- **[Tailwind CSS v4](https://tailwindcss.com/)** - Utility-first CSS
+- **[Wagmi v2](https://wagmi.sh/)** - React hooks for Ethereum
+- **[Viem](https://viem.sh/)** - TypeScript Ethereum library
+- **[TanStack Query](https://tanstack.com/query)** - Async state management
 
-## 🐛 Troubleshooting
+### Blockchain
+- **[Hardhat](https://hardhat.org/)** - Ethereum development environment
+- **[Solidity](https://soliditylang.org/)** - Smart contract language
+- **[OpenZeppelin](https://www.openzeppelin.com/)** - Secure contract library
+- **[Ethers.js v6](https://docs.ethers.org/)** - Ethereum library
 
-### Common Issues
+### Storage
+- **[IPFS](https://ipfs.io/)** - Decentralized file storage
+- **[Pinata](https://pinata.cloud/)** - IPFS pinning service
 
-1. **"Wallet Not Connected"**
-   - Make sure MetaMask is installed and unlocked
-   - Try refreshing the page and reconnecting
+## 📝 Smart Contract
 
-2. **"Unsupported Network"**
-   - Switch to Sepolia testnet in MetaMask
-   - Add Sepolia network if not already added
+The NFT contract (`MyNFT.sol`) is an ERC-721 token with the following features:
 
-3. **"Transaction Failed"**
-   - Check if you have enough ETH for gas fees
-   - Ensure contract address is correct
-   - Verify you're on the right network
+- ✅ Standard ERC-721 compliance
+- ✅ Configurable mint price
+- ✅ Max supply limit
+- ✅ Custom token URIs
+- ✅ Owner-only functions
+- ✅ Pausable minting
+- ✅ Withdraw function for contract owner
 
-4. **Contract not found**
-   - Double-check the contract address
-   - Ensure the contract is deployed on the current network
-   - Verify the ABI matches your deployed contract
+### Contract Functions
 
-### Getting Sepolia ETH
-1. Visit [Sepolia Faucet](https://sepoliafaucet.com/)
-2. Enter your wallet address
-3. Request test ETH
-4. Wait for confirmation
+```solidity
+// Mint with default URI
+function mint() external payable returns (uint256)
 
-## 🚀 Deployment
+// Mint with custom URI
+function mintWithURI(string memory customURI) external payable returns (uint256)
 
-### Vercel Deployment
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy!
+// Get contract information
+function getContractInfo() external view returns (...)
 
-### Environment Variables for Production
-```env
-NEXT_PUBLIC_CONTRACT_ADDRESS=0xYourProductionContractAddress
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
-NEXT_PUBLIC_NETWORK=mainnet
+// Owner functions
+function setMintPrice(uint256 newPrice) external onlyOwner
+function withdraw() external onlyOwner
 ```
 
-## 🔒 Security Notes
+## 🌐 Deployment
 
-- Never commit private keys or sensitive data
-- Use environment variables for configuration
-- Test thoroughly on testnets before mainnet deployment
-- Verify contract addresses before going live
-- Always verify smart contracts before deployment
+### Deploy to Sepolia Testnet
 
-## 📚 Learn More
+1. Get test ETH from [Sepolia Faucet](https://sepoliafaucet.com/)
 
-- [wagmi Documentation](https://wagmi.sh/)
-- [viem Documentation](https://viem.sh/)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [MetaMask Developer Docs](https://docs.metamask.io/)
+2. Configure your `.env.local`:
+```env
+SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
+PRIVATE_KEY=your_wallet_private_key
+ETHERSCAN_API_KEY=your_etherscan_api_key
+```
+
+3. Deploy:
+```bash
+npm run deploy:sepolia
+```
+
+4. Copy the deployed contract address to `.env.local`:
+```env
+NEXT_PUBLIC_CONTRACT_ADDRESS=0x...
+```
+
+5. Verify on Etherscan:
+```bash
+npx hardhat verify --network sepolia YOUR_CONTRACT_ADDRESS "ipfs://YOUR_BASE_URI"
+```
+
+## 🧪 Testing
+
+### Run Tests
+```bash
+# Run Hardhat tests
+npx hardhat test
+
+# Run with coverage
+npx hardhat coverage
+
+# Run specific test
+npx hardhat test test/MyNFT.test.js
+```
+
+### Test Locally
+```bash
+# Start local Hardhat node
+npx hardhat node
+
+# Deploy to local network (in another terminal)
+npm run deploy:local
+
+# Update .env.local with local contract address
+NEXT_PUBLIC_CONTRACT_ADDRESS=0x...
+
+# Start Next.js dev server
+npm run dev
+```
+
+## 📚 Environment Variables
+
+See `env.example` for a complete list of environment variables.
+
+### Required
+- `NEXT_PUBLIC_CONTRACT_ADDRESS` - Your deployed NFT contract address
+- `SEPOLIA_RPC_URL` - RPC endpoint for Sepolia testnet
+- `PRIVATE_KEY` - Wallet private key for deployment
+
+### Optional
+- `NEXT_PUBLIC_PINATA_API_KEY` - Pinata API key for IPFS
+- `NEXT_PUBLIC_PINATA_SECRET_KEY` - Pinata secret key
+- `NEXT_PUBLIC_INFURA_PROJECT_ID` - Infura project ID for IPFS
+- `NEXT_PUBLIC_INFURA_PROJECT_SECRET` - Infura project secret
+- `NEXT_PUBLIC_MOCK_IPFS` - Use mock IPFS for testing (true/false)
+- `ETHERSCAN_API_KEY` - For contract verification
+
+## 🛠️ Available Scripts
+
+```bash
+# Development
+npm run dev          # Start Next.js dev server with Turbopack
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+
+# Smart Contracts
+npm run compile      # Compile Solidity contracts
+npm run deploy:sepolia  # Deploy to Sepolia testnet
+npm run deploy:local    # Deploy to local Hardhat network
+```
+
+## 🔒 Security Best Practices
+
+⚠️ **IMPORTANT**: Never commit sensitive information to Git!
+
+- ✅ Use `.env.local` for sensitive data
+- ✅ Never share your private keys
+- ✅ Use hardware wallets for production
+- ✅ Audit smart contracts before mainnet deployment
+- ✅ Test thoroughly on testnets first
+- ✅ Use environment variables for all secrets
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [OpenZeppelin](https://www.openzeppelin.com/) - Secure smart contract library
+- [Wagmi](https://wagmi.sh/) - React hooks for Ethereum
+- [Hardhat](https://hardhat.org/) - Ethereum development environment
+- [Next.js](https://nextjs.org/) - React framework
+- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+
+## 📞 Support
+
+- 📧 Email: your.email@example.com
+- 🐦 Twitter: [@yourhandle](https://twitter.com/yourhandle)
+- 💬 Discord: [Your Discord Server](https://discord.gg/yourserver)
+
+## 🔗 Links
+
+- **Live Demo**: [https://your-demo.vercel.app](https://your-demo.vercel.app)
+- **Contract on Etherscan**: [View Contract](https://sepolia.etherscan.io/address/YOUR_CONTRACT)
+- **Documentation**: [Full Docs](./SETUP.md)
+
+---
+
+**Built with ❤️ by [Your Name](https://github.com/yourusername)**
