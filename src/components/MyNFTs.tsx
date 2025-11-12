@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAccount, useReadContract, usePublicClient } from 'wagmi'
+import { useAccount, useReadContract, usePublicClient, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '@/lib/contract'
 
 interface NFTMetadata {
@@ -184,8 +184,60 @@ export default function MyNFTs() {
 }
 
 function NFTCard({ nft }: { nft: NFT }) {
+  const { address } = useAccount()
   const [imageError, setImageError] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
+  const [showTransferModal, setShowTransferModal] = useState(false)
+  const [recipientAddress, setRecipientAddress] = useState('')
+  const [transferError, setTransferError] = useState('')
+
+  const { writeContract, data: hash, isPending, error } = useWriteContract()
+  
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  })
+
+  // Handle transfer
+  const handleTransfer = async () => {
+    setTransferError('')
+    
+    // Validate address
+    if (!recipientAddress) {
+      setTransferError('Please enter a recipient address')
+      return
+    }
+    
+    if (!recipientAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
+      setTransferError('Invalid Ethereum address')
+      return
+    }
+    
+    if (recipientAddress.toLowerCase() === address?.toLowerCase()) {
+      setTransferError('Cannot transfer to yourself')
+      return
+    }
+
+    try {
+      writeContract({
+        address: CONTRACT_ADDRESS as `0x${string}`,
+        abi: CONTRACT_ABI,
+        functionName: 'safeTransferFrom',
+        args: [address as `0x${string}`, recipientAddress as `0x${string}`, nft.tokenId],
+      })
+    } catch (err) {
+      console.error('Transfer error:', err)
+      setTransferError('Failed to initiate transfer')
+    }
+  }
+
+  // Reset modal when transfer is confirmed
+  useEffect(() => {
+    if (isConfirmed) {
+      setShowTransferModal(false)
+      setRecipientAddress('')
+      setTransferError('')
+    }
+  }, [isConfirmed])
 
   return (
     <div className="group bg-gray-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-700 hover:border-blue-500 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1">
@@ -278,36 +330,172 @@ function NFTCard({ nft }: { nft: NFT }) {
         )}
 
         {/* Action Buttons */}
-        <div className="pt-4 border-t border-gray-700 flex gap-2">
-          <a
-            href={`https://testnets.opensea.io/assets/sepolia/${CONTRACT_ADDRESS}/${nft.tokenId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 text-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/50"
-          >
-            OpenSea
-          </a>
-          <a
-            href={`https://sepolia.etherscan.io/token/${CONTRACT_ADDRESS}?a=${nft.tokenId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-            title="View on Etherscan"
+        <div className="pt-4 border-t border-gray-700 space-y-2">
+          <div className="flex gap-2">
+            <a
+              href={`https://testnets.opensea.io/assets/sepolia/${CONTRACT_ADDRESS}/${nft.tokenId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 text-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/50"
+            >
+              OpenSea
+            </a>
+            <a
+              href={`https://sepolia.etherscan.io/token/${CONTRACT_ADDRESS}?a=${nft.tokenId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              title="View on Etherscan"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </a>
+          </div>
+          <button
+            onClick={() => setShowTransferModal(true)}
+            className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/50 flex items-center justify-center gap-2"
           >
             <svg
-              className="w-5 h-5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
               <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
               />
             </svg>
-          </a>
+            Transfer
+          </button>
         </div>
       </div>
+
+      {/* Transfer Modal */}
+      {showTransferModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-2xl border border-gray-700 max-w-md w-full p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-white">Transfer NFT</h3>
+              <button
+                onClick={() => {
+                  setShowTransferModal(false)
+                  setRecipientAddress('')
+                  setTransferError('')
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex items-center gap-3 p-4 bg-gray-900/50 rounded-lg border border-gray-700">
+                {nft.metadata?.image && !imageError ? (
+                  <img
+                    src={nft.metadata.image}
+                    alt={nft.metadata.name || `NFT #${nft.tokenId}`}
+                    className="w-16 h-16 rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-600/30 to-purple-600/30 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
+                <div>
+                  <p className="text-white font-semibold">
+                    {nft.metadata?.name || `MyNFT #${nft.tokenId}`}
+                  </p>
+                  <p className="text-gray-400 text-sm">Token ID: #{nft.tokenId.toString()}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Recipient Address
+              </label>
+              <input
+                type="text"
+                value={recipientAddress}
+                onChange={(e) => setRecipientAddress(e.target.value)}
+                placeholder="0x..."
+                className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+              {transferError && (
+                <p className="mt-2 text-sm text-red-400">{transferError}</p>
+              )}
+              {error && (
+                <p className="mt-2 text-sm text-red-400">
+                  {error.message || 'Transaction failed'}
+                </p>
+              )}
+            </div>
+
+            {isConfirming && (
+              <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                <p className="text-blue-400 text-sm flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
+                  Waiting for confirmation...
+                </p>
+              </div>
+            )}
+
+            {isConfirmed && (
+              <div className="mb-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                <p className="text-green-400 text-sm flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Transfer successful!
+                </p>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowTransferModal(false)
+                  setRecipientAddress('')
+                  setTransferError('')
+                }}
+                className="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleTransfer}
+                disabled={isPending || isConfirming || !recipientAddress}
+                className="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                {isPending || isConfirming ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    {isPending ? 'Confirming...' : 'Processing...'}
+                  </>
+                ) : (
+                  'Transfer'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
