@@ -6,9 +6,9 @@ import { usePublicClient } from 'wagmi'
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '@/lib/contract'
 
 interface DebugInfo {
-  tokenId: string
-  uri: string
-  owner: string
+  tokenId?: string
+  uri?: string
+  owner?: string
   metadata?: {
     name?: string
     description?: string
