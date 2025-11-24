@@ -7,6 +7,10 @@ A modern, full-stack decentralized application for minting, managing, and tradin
 ![Solidity](https://img.shields.io/badge/Solidity-0.8.20-gray?style=for-the-badge&logo=solidity)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
+## 🌐 Live Demo
+
+**🚀 [View Live Demo on Vercel](https://nft-dapp-web3.vercel.app/)**
+
 ## ✨ Features
 
 ### 🔐 **Wallet Integration**
@@ -319,7 +323,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ## 🔗 Links
 
-- **Live Demo**: [https://your-demo.vercel.app](https://your-demo.vercel.app)
+- **Live Demo**: [https://nft-dapp-web3.vercel.app](https://nft-dapp-web3.vercel.app)
 - **Contract on Etherscan**: [View Contract](https://sepolia.etherscan.io/address/YOUR_CONTRACT)
 - **Documentation**: [Full Docs](./SETUP.md)
 
