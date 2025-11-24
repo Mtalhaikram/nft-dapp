@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useAccount, useReadContract, usePublicClient, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '@/lib/contract'
 
@@ -119,7 +120,7 @@ export default function MyNFTs() {
                 metadata,
               })
             }
-          } catch (err) {
+          } catch {
             // Token doesn't exist or error reading - skip it
           }
         }
@@ -198,7 +199,7 @@ export default function MyNFTs() {
         </div>
         <h3 className="text-3xl font-bold text-white mb-3">No NFTs Yet</h3>
         <p className="text-gray-400 max-w-md mx-auto leading-relaxed">
-          You haven't minted any NFTs yet. Head to the mint section above to create your first NFT!
+          You haven&apos;t minted any NFTs yet. Head to the mint section above to create your first NFT!
         </p>
       </div>
     )
@@ -364,10 +365,12 @@ function NFTCard({ nft }: { nft: NFT }) {
                   </div>
                 </div>
               )}
-              <img
+              <Image
                 key={currentImageUrl} // Force re-render when URL changes
                 src={currentImageUrl}
                 alt={nft.metadata?.name || `NFT #${nft.tokenId}`}
+                width={400}
+                height={400}
                 className={`w-full h-full object-cover transition-all duration-500 ${
                   imageLoading ? 'opacity-0 scale-110' : 'opacity-100 scale-100 group-hover:scale-110'
                 }`}
@@ -379,6 +382,7 @@ function NFTCard({ nft }: { nft: NFT }) {
                   console.error(`❌ Failed to load image for NFT #${nft.tokenId}`)
                   tryNextGateway()
                 }}
+                unoptimized
               />
             </>
           ) : (
@@ -529,10 +533,13 @@ function NFTCard({ nft }: { nft: NFT }) {
             <div className="mb-6">
               <div className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
                 {currentImageUrl && !imageError ? (
-                  <img
+                  <Image
                     src={currentImageUrl}
                     alt={nft.metadata?.name || `NFT #${nft.tokenId}`}
+                    width={80}
+                    height={80}
                     className="w-20 h-20 rounded-xl object-cover border-2 border-white/10"
+                    unoptimized
                   />
                 ) : (
                   <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-purple-600/30 to-pink-600/30 flex items-center justify-center border-2 border-white/10">

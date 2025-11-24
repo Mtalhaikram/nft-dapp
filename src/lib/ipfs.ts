@@ -66,7 +66,7 @@ const uploadToPinata = async (formData: FormData): Promise<string> => {
 }
 
 // Mock upload for testing (returns a fake hash that looks like a real IPFS hash)
-const mockUpload = async (formData: FormData): Promise<string> => {
+const mockUpload = async (): Promise<string> => {
   console.log('Using mock upload for testing...')
   // Simulate upload delay
   await new Promise(resolve => setTimeout(resolve, 1000))
@@ -80,7 +80,7 @@ const tryIPFSUploadWithFallback = async (formData: FormData, headers: Record<str
   // Enable mock mode for testing (default in development)
   if (process.env.NEXT_PUBLIC_MOCK_IPFS === 'true' || (!process.env.NEXT_PUBLIC_PINATA_API_KEY && !process.env.NEXT_PUBLIC_INFURA_PROJECT_ID)) {
     console.log('Using mock IPFS upload (no credentials configured)')
-    return await mockUpload(formData)
+    return await mockUpload()
   }
 
   // Try Pinata first if API keys are available

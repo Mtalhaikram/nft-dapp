@@ -1,12 +1,32 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { usePublicClient } from 'wagmi'
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '@/lib/contract'
 
+interface DebugInfo {
+  tokenId: string
+  uri: string
+  owner: string
+  metadata?: {
+    name?: string
+    description?: string
+    image?: string
+    attributes?: Array<{
+      trait_type: string
+      value: string | number
+    }>
+  }
+  metadataError?: string
+  isIPFSUri?: boolean
+  isMockHash?: boolean
+  error?: string
+}
+
 export function NFTDebugger() {
   const [tokenId, setTokenId] = useState('1')
-  const [debugInfo, setDebugInfo] = useState<any>(null)
+  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null)
   const [loading, setLoading] = useState(false)
   const publicClient = usePublicClient()
 
@@ -223,9 +243,11 @@ export function NFTDebugger() {
                           Image Preview:
                         </p>
                         <div className="relative">
-                          <img
+                          <Image
                             src={debugInfo.metadata.image}
                             alt="NFT"
+                            width={300}
+                            height={300}
                             className="max-w-xs rounded-xl border-2 border-white/10 shadow-2xl"
                             onError={(e) => {
                               e.currentTarget.style.display = 'none'
@@ -242,6 +264,7 @@ export function NFTDebugger() {
                             onLoad={() => {
                               console.log('✅ Image loaded successfully')
                             }}
+                            unoptimized
                           />
                         </div>
                       </div>
@@ -260,7 +283,7 @@ export function NFTDebugger() {
                       <p className="font-bold text-red-400 text-lg">Failed to fetch metadata</p>
                       <p className="text-red-300 text-sm mt-1">{debugInfo.metadataError}</p>
                       <p className="text-red-400/60 text-xs mt-2">
-                        This usually means the IPFS hash is invalid or the file doesn't exist on IPFS
+                        This usually means the IPFS hash is invalid or the file doesn&apos;t exist on IPFS
                       </p>
                     </div>
                   </div>
@@ -281,7 +304,7 @@ export function NFTDebugger() {
           <div>
             <p className="text-blue-400 font-bold text-sm mb-1">💡 Developer Tip</p>
             <p className="text-gray-300 text-xs leading-relaxed">
-              If you're using mock IPFS hashes (no API keys configured), the images won't load. 
+              If you&apos;re using mock IPFS hashes (no API keys configured), the images won&apos;t load. 
               Configure Pinata or Infura API keys in your <code className="bg-black/30 px-1.5 py-0.5 rounded text-cyan-400 font-mono">.env</code> file to upload real images to IPFS.
             </p>
           </div>

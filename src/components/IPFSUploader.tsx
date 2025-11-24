@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import { uploadNFTToIPFS, generateNFTMetadata } from '@/lib/ipfs'
 
 interface IPFSUploaderProps {
@@ -193,10 +194,13 @@ export function IPFSUploader({ onMetadataUploaded, onUploadComplete }: IPFSUploa
           {imagePreview ? (
             <div className="space-y-4">
               <div className="relative inline-block">
-                <img
+                <Image
                   src={imagePreview}
                   alt="Preview"
+                  width={300}
+                  height={256}
                   className="max-w-xs max-h-64 mx-auto rounded-xl shadow-2xl border-2 border-white/10"
+                  style={{ objectFit: 'contain' }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <button
