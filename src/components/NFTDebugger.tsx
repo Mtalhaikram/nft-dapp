@@ -17,8 +17,8 @@ interface DebugInfo {
       trait_type: string
       value: string | number
     }>
-  }
-  metadataError?: string
+  } | null
+  metadataError?: string | null
   isIPFSUri?: boolean
   isMockHash?: boolean
   error?: string
